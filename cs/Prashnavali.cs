@@ -11,8 +11,11 @@ namespace RamShalaka
     {
         char[] charSet = new char[] { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','`','~','!','@','#','$','%','^','&','(',')','_','{','}','[',']','|','\\',':',';','"','.','?',',','+','-','*','/','<','>','=','\'','0','1','2','3','4','5','6','7','8','9' };
 
+        List<int> AsciiCharSet = Enumerable.Range('\x1', 127).ToList();
+
         List<int> Key;
         List<int> Key2;
+        int select = 6;
 
         public string Encrypt(string textToEncrypt,int key2)
         {
@@ -30,7 +33,7 @@ namespace RamShalaka
             }
 
             var random = new Random();
-            var select = random.Next(avg, 10);
+            //select = random.Next(avg, wordsCount);
             var square = Convert.ToInt32(nearest_sq);
             List<char> TransposedText = new List<char>();
             var range = new char[square];
@@ -39,6 +42,10 @@ namespace RamShalaka
             {
                 var wordCharArray = words[j].ToCharArray();
                 var wordCount = j;
+                if (TransposedText[wordCount] != '\0')
+                {
+                    wordCount = TransposedText.IndexOf('\0');
+                }
                 
                 for (int i = 0; i < wordCharArray.Count();i++)
                 {
@@ -46,6 +53,11 @@ namespace RamShalaka
                     {
                         TransposedText.AddRange(new char[select]);
                     }
+                    if (TransposedText[wordCount] != '\0')
+                    {
+
+                    }
+
                     TransposedText[wordCount] = wordCharArray[i];
                     wordCount = wordCount + select;
                 }
@@ -95,6 +107,8 @@ namespace RamShalaka
         public string Decrypt(string textToDecrypt,int key2)
         {
             List<char> textArray = new List<char>();
+            List<int> intArray = new List<int>();
+            List<bool> checkArray = new List<bool>();
             
             var charArray = textToDecrypt.ToCharArray();
             int count = 0;
@@ -126,7 +140,11 @@ namespace RamShalaka
                 {
                     result = result + 68;
                 }
+                var intresult = data - Key[i];
+                //var mod = Math.Abs(result) % 68;
+                intArray.Add(intresult);
                 textArray.Add(charSet[result]);
+                checkArray.Add(false);
             }
 
             List<string> words = new List<string>();
@@ -139,18 +157,30 @@ namespace RamShalaka
             var colrow = textArray.Count() + count;
             var col = (colrow - hw);
             var nvalue  = (int)(col / hw);
-            nvalue = keys.Count() * nvalue;
+            //nvalue = keys.Count() * nvalue;
             //var select = textArray.Count() % avg;
 
             for(int i = 0; i < keys.Count(); i++)
             {
                 var wordCount = keys[i];
                 string word = "";
-                for(int j = i;j<textArray.Count();j++)
+                var index = i;
+                if (checkArray[i] == true)
+                {
+                    index = checkArray.IndexOf(false);
+
+                }
+
+                for(int j = index;j<textArray.Count();)
                 {
                     if (wordCount > word.Count()) {
                         word = word + textArray[j];
-                        j = j + nvalue;
+                        checkArray[j] = true;
+                        j = j + select;
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
                 words.Add(word);
