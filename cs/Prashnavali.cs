@@ -9,13 +9,27 @@ namespace RamShalaka
 {
     public class Prashnavali
     {
-        char[] charSet = new char[] { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','`','~','!','@','#','$','%','^','&','(',')','_','{','}','[',']','|','\\',':',';','"','.','?',',','+','-','*','/','<','>','=','\'','0','1','2','3','4','5','6','7','8','9' };
+        //char[] charSet = new char[] { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','`','~','!','@','#','$','%','^','&','(',')','_','{','}','[',']','|','\\',':',';','"','.','?',',','+','-','*','/','<','>','=','\'','0','1','2','3','4','5','6','7','8','9' };
 
-        List<int> AsciiCharSet = Enumerable.Range('\x1', 127).ToList();
+        List<char> charSet = new List<char>();
+        //Updated 148 Character Set
+        string sre = "!\"#$%&()*+'-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~€‚ƒ„…†‡ˆ‰Š‹ŒŽ“”•–—˜™š›œžŸ¡¢£¤¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿";
 
-        List<int> Key;
-        List<int> Key2;
-        int select = 6;
+        public List<int> Key;
+        public List<int> Key2;
+        public int select = 6;
+
+        public Prashnavali()
+        {
+            charSet = sre.ToCharArray().ToList();
+        }
+
+        public Prashnavali(List<int> key1,List<int> key2,int select)
+        {
+            Key = key1;
+            Key2 = key2;
+            this.select = select;
+        }
 
         public string Encrypt(string textToEncrypt,int key2)
         {
@@ -70,8 +84,9 @@ namespace RamShalaka
             var rand = new Random();
             for (int i=0;i< TransposedTextCount;i++)
             {
-                var text = char.ToLower(TransposedText[i]);
-                var data = Array.IndexOf(charSet, text);
+                var text = TransposedText[i];
+                var data = charSet.IndexOf(text);
+                //var data = Array.IndexOf(charSet, (int)text);
                 
                 Key[i] = rand.Next(100, 500);
                 var mod = (data + Key[i]) % charSet.Count();
@@ -133,12 +148,13 @@ namespace RamShalaka
 
             for (int i =0;i<charArray.Count();i++)
             {
-                var data = Array.IndexOf(charSet, charArray[i]);
-                data = data + 68;
+                var data = charSet.IndexOf(charArray[i]);
+                //var data = Array.IndexOf(charSet, charArray[i]);
+                data = data + charSet.Count();
                 var result = data - Key[i];
                 while(result < 0)
                 {
-                    result = result + 68;
+                    result = result + charSet.Count();
                 }
                 var intresult = data - Key[i];
                 //var mod = Math.Abs(result) % 68;
